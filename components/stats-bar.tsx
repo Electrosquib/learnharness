@@ -87,7 +87,8 @@ export function StatsBar({
 	// Honest cost: show dollars only when at least one turn priced;
 	// otherwise "—" (never a fake $0.0000).
 	const pricedCount = turns.length - unpriced;
-	const costLabel = pricedCount > 0 ? formatUsd(cost) : "—";
+	const planTurns = turns.filter((turn) => turn.model.startsWith("openai-chatgpt:")).length;
+	const costLabel = pricedCount > 0 ? `${formatUsd(cost)}${planTurns ? " + ChatGPT plan" : ""}` : planTurns ? "ChatGPT plan" : "—";
 	const lastModel = turns.at(-1)?.model;
 
 	return (
@@ -146,10 +147,10 @@ export function StatsBar({
 								<span>Total cost</span>
 								<span className="tabular-nums text-card-foreground">{costLabel}</span>
 							</div>
-							{unpriced > 0 && (
+							{unpriced > planTurns && (
 								<div className="flex justify-between gap-2">
 									<span>Unpriced turns</span>
-									<span className="tabular-nums text-card-foreground">{unpriced}</span>
+									<span className="tabular-nums text-card-foreground">{unpriced - planTurns}</span>
 								</div>
 							)}
 						</div>
@@ -168,7 +169,7 @@ export function StatsBar({
 												</span>
 												<span className="flex shrink-0 items-center gap-2 tabular-nums text-card-foreground">
 													<span className="text-muted-foreground">{turn.steps.length} steps</span>
-													<span>{c === null ? "—" : formatUsd(c)}</span>
+													<span>{turn.model.startsWith("openai-chatgpt:") ? "ChatGPT plan" : c === null ? "—" : formatUsd(c)}</span>
 												</span>
 											</li>
 										);

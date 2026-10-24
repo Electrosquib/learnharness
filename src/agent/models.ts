@@ -1,6 +1,8 @@
 import {
 	clampThinkingLevel,
 	createModels,
+	createProvider,
+	type CredentialStore,
 	getSupportedThinkingLevels,
 	type Api,
 	type Model,
@@ -8,6 +10,8 @@ import {
 	type StreamFunction,
 } from "@earendil-works/pi-ai";
 import { builtinProviders } from "@earendil-works/pi-ai/providers/all";
+import { openaiProvider } from "@earendil-works/pi-ai/providers/openai";
+import { openAIResponsesApi } from "@earendil-works/pi-ai/api/openai-responses.lazy";
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 import { type ModelRole } from "../../config.ts";
 import { DEFAULT_THINKING_ORDER } from "../core/settings.ts";
@@ -44,6 +48,12 @@ export interface PiEngine {
 export type { ThinkingLevel };
 
 let collection: ReturnType<typeof createModels> | undefined;
+let credentials: CredentialStore | undefined;
+
+export function configureModelCredentials(store: CredentialStore) {
+	credentials = store;
+	collection = undefined;
+}
 
 /** The process-wide pi-ai Models collection — EVERY builtin provider's
  *  catalog (model slots wave, 2026-09-20): engines and the picker resolve
@@ -55,8 +65,20 @@ let collection: ReturnType<typeof createModels> | undefined;
  *  keyPresent. */
 export function piModels() {
 	if (!collection) {
-		collection = createModels({ identity: APP_IDENTITY });
+		collection = createModels({ identity: APP_IDENTITY, credentials });
 		for (const provider of builtinProviders()) collection.setProvider(provider);
+		const openai = openaiProvider();
+		// Separate identity prevents API-key fallback and keeps plan usage out of API cost estimates.
+		collection.setProvider(createProvider({
+			id: "openai-chatgpt",
+			name: "ChatGPT subscription",
+			baseUrl: openai.baseUrl,
+			auth: { oauth: openai.auth.oauth },
+			models: openai.getModels().filter((m) => m.api === "openai-responses").map((m) => ({
+				...m, provider: "openai-chatgpt",
+			})),
+			api: openAIResponsesApi(),
+		}));
 	}
 	return collection;
 }

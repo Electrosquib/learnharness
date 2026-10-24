@@ -27,6 +27,11 @@ function turn(over: Partial<TurnUsage> = {}): TurnUsage {
 }
 
 describe("stats bar", () => {
+	it("labels subscription usage without inventing API charges", () => {
+		const plan = turn({ model: "openai-chatgpt:gpt-5.4" });
+		assert.match(renderToStaticMarkup(<StatsBar turns={[plan]} />), /data-testid="stats-cost">ChatGPT plan</);
+		assert.match(renderToStaticMarkup(<StatsBar turns={[turn(), plan]} />), /data-testid="stats-cost">\$0\.0020 \+ ChatGPT plan</);
+	});
 	it("renders NOTHING on the left when there are no turns yet (owner, wave 7 sweep)", () => {
 		const html = renderToStaticMarkup(
 			<StatsBar turns={[]} />,

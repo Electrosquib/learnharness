@@ -50,6 +50,16 @@ Future teaching sessions can read the graph instead of starting from scratch. Pr
 
 Add your provider API key and choose your models, then start a session with what you want to understand. LearnHarness supports 30+ provider options, including OpenAI, Anthropic, Google, DeepSeek, and OpenRouter. Optional dictation and web search use separate service keys.
 
+### Use your ChatGPT subscription (this fork)
+
+1. Run `npm install` and `npm run dev`, then open http://localhost:3000.
+2. In setup or **Settings → Keys**, click **Sign in with ChatGPT**, then **Continue sign-in in your browser**. Authorize ChatGPT plan usage with your eligible account.
+3. Choose models from **openai-chatgpt** for Strong, Cheap and Vision, then save. Background agents use these slots too; replace any existing API-provider overrides if you want all model requests to use your plan.
+
+This uses OpenAI's Sign in with ChatGPT plan-sharing flow, not an API key or an imported Codex token. Plan eligibility, available models and usage limits apply. The picker is a model catalog; the first request confirms account access. Subscription requests never fall back to an API key, and usage is labeled **ChatGPT plan** rather than API dollars. Optional search and dictation still need their own service keys.
+
+Credentials refresh automatically and live in `chatgpt-auth.json` beside the app's existing `auth.json` (desktop: its user data directory; development: the repository root). Both Git and the build exclude this file. **Disconnect** removes local tokens; manage app access and plan usage in ChatGPT settings. Sign-in uses loopback port 1455 on this computer; close any other pending Codex login if that port is busy. If the browser callback fails, expand **Browser did not return?** and paste the final redirect URL. Sign-in expires after 5 minutes.
+
 All three platforms support in-app updates.
 
 ## Your keys, your data
