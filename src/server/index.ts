@@ -44,3 +44,7 @@ export * from "./compaction.ts";
 export { runPiTurn, piTurnResponse, type PiTurnHandle, type PiTurnSpec } from "./pi/ui-stream.ts";
 export * from "./observability.ts";
 export * from "./model-catalog.ts";
+export * from "./study.ts";
+export * from "./local-whisper.ts";
+export * from "./lamaku.ts";
+export * from "./request-body.ts";

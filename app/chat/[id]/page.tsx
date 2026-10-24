@@ -30,7 +30,7 @@ export default async function ChatPage({
 				// native messages).
 				initialMessages={chat.messages}
 			initialConfigured={slotsConfigured(record?.models)}
-			initialPrompt={prompt}
+			initialPrompt={prompt ?? (chat.messages.find((m) => m.role === "custom" && m.customType === "study-context") as { details?: { opening?: string } } | undefined)?.details?.opening}
 			// A teacher turn that outlived its client: the remounted view must
 			// attach (busy shimmer + poll), never resurrect the stale record.
 			initiallyInFlight={isTurnRunning(chat.id)}

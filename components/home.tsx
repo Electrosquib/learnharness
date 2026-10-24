@@ -12,6 +12,7 @@ import { DictationBar, joinDictation, useDictation } from "@/components/dictatio
 import { useFieldCycle } from "@/components/field-cycle";
 import { SidebarToggle } from "@/components/sidebar";
 import { StatsBar } from "@/components/stats-bar";
+import { StudyPanel } from "@/components/study-panel";
 import type { TurnUsage } from "@/src/core";
 
 /**
@@ -203,6 +204,7 @@ export function Home({
 				<div className="pointer-events-auto">
 					<SidebarToggle />
 				</div>
+				<StudyPanel configured={configured} />
 			</header>
 
 			{/* New session — same floating blob as the chat composer, docked

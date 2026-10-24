@@ -48,7 +48,7 @@ Future teaching sessions can read the graph instead of starting from scratch. Pr
 - **Windows (x64):** run the installer. It is currently unsigned; Windows may show an “unknown publisher” or SmartScreen warning.
 - **Linux (x64):** make the AppImage executable and open it, or install the Debian/Ubuntu `.deb`.
 
-Add your provider API key and choose your models, then start a session with what you want to understand. LearnHarness supports 30+ provider options, including OpenAI, Anthropic, Google, DeepSeek, and OpenRouter. Optional dictation and web search use separate service keys.
+Connect your ChatGPT subscription or add a provider API key and choose your models, then start a session with what you want to understand. LearnHarness supports 30+ provider options, including OpenAI, Anthropic, Google, DeepSeek, and OpenRouter. Dictation runs locally; optional web search uses a separate service key.
 
 ### Use your ChatGPT subscription (this fork)
 
@@ -56,11 +56,27 @@ Add your provider API key and choose your models, then start a session with what
 2. In setup or **Settings → Keys**, click **Sign in with ChatGPT**, then **Continue sign-in in your browser**. Authorize ChatGPT plan usage with your eligible account.
 3. Choose models from **openai-chatgpt** for Strong, Cheap and Vision, then save. Background agents use these slots too; replace any existing API-provider overrides if you want all model requests to use your plan.
 
-This uses OpenAI's Sign in with ChatGPT plan-sharing flow, not an API key or an imported Codex token. Plan eligibility, available models and usage limits apply. The picker is a model catalog; the first request confirms account access. Subscription requests never fall back to an API key, and usage is labeled **ChatGPT plan** rather than API dollars. Optional search and dictation still need their own service keys.
+This uses OpenAI's Sign in with ChatGPT plan-sharing flow. Plan eligibility, available models and usage limits apply. The picker is a model catalog; the first request confirms account access. Subscription requests never fall back to an API key, and usage is labeled **ChatGPT plan** rather than API dollars. Optional search still needs its own service key.
 
 Credentials refresh automatically and live in `chatgpt-auth.json` beside the app's existing `auth.json` (desktop: its user data directory; development: the repository root). Both Git and the build exclude this file. **Disconnect** removes local tokens; manage app access and plan usage in ChatGPT settings. Sign-in uses loopback port 1455 on this computer; close any other pending Codex login if that port is busy. If the browser callback fails, expand **Browser did not return?** and paste the final redirect URL. Sign-in expires after 5 minutes.
 
 All three platforms support in-app updates.
+
+### Lamakū study priorities and homework preparation
+
+Open **Study priorities & homework** on the home screen. **Connect Lamakū** opens a dedicated Chrome profile: sign in there with your UH account and complete Duo, then return to LearnHarness and click **Sync Lamakū**. Select courses and sync again. The browser session stays in the app's local data directory, separate from your everyday Chrome profile; passwords are entered only on UH's website. This connection reads visible course pages using your student session, rather than the registered OAuth API.
+
+The study list prioritizes overdue work, work due within seven days, and uploaded homework. Submission status is shown as unknown when the page does not state it. Course pages and PDFs provide syllabus and assignment context; material hidden from your student account cannot be read. An expired session or failed sync is shown explicitly, and cached material remains available for manual lessons. Browser-based sync depends on Brightspace's page structure and must be checked against the selected courses.
+
+Upload a PDF, PNG/JPEG/WebP photo, or TXT/Markdown homework file (up to 20 MB) to start preparation with your configured model. The tutor diagnoses prerequisite gaps, teaches using similar examples, and checks understanding before you attempt the homework. Scanned documents use your Vision model. References are stored separately from the knowledge graph and do not count as demonstrated understanding. Use **I’m ready to attempt this** to remove prepared work from the priority queue, or **Review again** to bring it back.
+
+Automatic teaching can be disabled in the study panel. When enabled, opening LearnHarness syncs selected courses and starts or resumes one priority lesson per browser window. Existing homework lessons are reused. A sync failure pauses automatic teaching so stale deadlines are not silently presented as current.
+
+### Local live dictation
+
+Run `python scripts/setup_local.py` once. This installs faster-whisper and, on Windows, its GPU runtime into `.venv`; it reuses existing transcription weights. Faster-whisper also includes a small Silero VAD model. The worker reads existing `faster-distil-whisper-large-v3` or `faster-whisper-medium.en` paths from `~/Desktop/model_paths.md`. Alternatively, set `LH_WHISPER_MODEL` to an existing CTranslate2 model directory. Set `LH_WHISPER_PYTHON` if using a different Python environment or a packaged desktop build.
+
+The existing mic button and shortcuts now show a live local transcript, refreshed about every 1.5 seconds. Stop commits the final text to the active answer field or composer; Escape discards it. Audio stays on this computer and needs no Deepgram key. The model stays warm between requests and uses CUDA when available, with CPU fallback. `GET /api/stt/token` reports the local engine and device; the legacy URL no longer mints a cloud token.
 
 ## Your keys, your data
 

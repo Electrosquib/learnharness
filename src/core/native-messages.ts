@@ -67,6 +67,7 @@ export interface LhMarkerMessage {
 	role: "custom";
 	customType:
 		| "graph-context"
+		| "study-context"
 		| "probe-handoff"
 		| "subagent-steer"
 		| "subagent-abort"

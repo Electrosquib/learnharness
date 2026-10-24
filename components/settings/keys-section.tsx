@@ -451,7 +451,7 @@ export function KeysSection({
 			</SettingsGroup>
 
 			<SettingsGroup label="Tools & services" testid="group-tool-keys">
-				{toolRows.map((status) => (
+				{toolRows.filter((status) => status.id !== "DEEPGRAM_API_KEY").map((status) => (
 					<KeyTableRow
 						key={status.id}
 						label={status.info?.label ?? status.id}

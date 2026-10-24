@@ -14,6 +14,8 @@ dist/
 # dev auth/keys store (auth-keys wave): repo-root auth.json — secrets never committed
 auth.json
 chatgpt-auth.json*
+.venv/
+__pycache__/
 
 # dev-fresh launcher scratch (fresh-user sim): disposable per launch
 .fresh-data/

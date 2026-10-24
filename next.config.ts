@@ -40,6 +40,8 @@ const nextConfig: NextConfig = {
 			"data/**/*",
 			"auth.json",
 			"chatgpt-auth.json*",
+			".venv/**/*",
+			".fresh-data/**/*",
 			".env*",
 		],
 	},
@@ -56,6 +58,7 @@ const nextConfig: NextConfig = {
 	// caught it; unit tests run unbundled and never see it.
 	outputFileTracingIncludes: {
 		"*": [
+			"scripts/local_whisper.py",
 			// The standalone trace omitted this entire runtime-imported directory
 			// in 0.3.0, so importing puppeteer-core failed before browser startup.
 			"node_modules/@puppeteer/browsers/lib/browser-data/**/*.js",
