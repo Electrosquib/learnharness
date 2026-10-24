@@ -4,6 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { after, it } from "node:test";
 import type { OAuthCredential } from "@earendil-works/pi-ai";
+import { normalizeContext } from "@earendil-works/pi-ai";
+import { Type } from "typebox";
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "lh-chatgpt-"));
 process.env.LH_AUTH_FILE = path.join(temp, "auth.json");
@@ -60,6 +62,24 @@ it("refreshes an expired credential once under concurrent requests and persists 
 	const refreshed = await store.chatGPTCredentials.read(providerId);
 	assert.equal(refreshed?.type === "oauth" && refreshed.access, "refreshed-access");
 	piModels().setProvider(provider);
+});
+
+it("applies native subscription payload guards despite the separate billing provider ID", async () => {
+	const engine = piEngineForSpec({ provider: providerId, id: "gpt-6.1-sol", thinkingLevel: "high" });
+	let inspected = false;
+	await engine.streamFn(engine.model, normalizeContext({ messages: [
+		{ role: "system", content: "Teach prerequisites.", timestamp: 1, toolsAdded: [{ name: "check", description: "Check a concept", parameters: Type.Object({ concept: Type.String() }) }] },
+		{ role: "user", content: "Fractions", timestamp: 2 },
+	] }), { onPayload(payload) {
+		const request = payload as { input: { type?: string; role?: string }[]; reasoning?: { effort?: string }; prompt_cache_retention?: string; prompt_cache_options?: unknown };
+		assert.ok(request.input.every((item) => item.type !== "configuration_update" && item.type !== "tool_search_call" && item.type !== "tool_search_output"));
+		assert.equal(request.prompt_cache_retention, undefined);
+		assert.equal(request.prompt_cache_options, undefined);
+		assert.equal(request.reasoning?.effort, "high");
+		inspected = true;
+		throw new Error("Stop before network: payload inspected");
+	} }).result();
+	assert.equal(inspected, true);
 });
 
 it("disconnect removes tokens, preserves the host ID, and closes the model gate", async () => {

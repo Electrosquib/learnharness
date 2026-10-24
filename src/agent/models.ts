@@ -68,6 +68,7 @@ export function piModels() {
 		collection = createModels({ identity: APP_IDENTITY, credentials });
 		for (const provider of builtinProviders()) collection.setProvider(provider);
 		const openai = openaiProvider();
+		const responses = openAIResponsesApi();
 		// Separate identity prevents API-key fallback and keeps plan usage out of API cost estimates.
 		collection.setProvider(createProvider({
 			id: "openai-chatgpt",
@@ -77,7 +78,11 @@ export function piModels() {
 			models: openai.getModels().filter((m) => m.api === "openai-responses").map((m) => ({
 				...m, provider: "openai-chatgpt",
 			})),
-			api: openAIResponsesApi(),
+			// Pi's subscription capability guards key on the native provider identity.
+			api: {
+				stream: (model, context, options) => responses.stream({ ...model, provider: "openai" }, context, options),
+				streamSimple: (model, context, options) => responses.streamSimple({ ...model, provider: "openai" }, context, options),
+			},
 		}));
 	}
 	return collection;
